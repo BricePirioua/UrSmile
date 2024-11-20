@@ -1,16 +1,18 @@
 // src/store/useUserStore.ts
 import { create } from 'zustand';
 
-type UserStore = {
+interface UserState {
   mood: string | null;
   dailyAffirmation: string | null;
   setMood: (mood: string) => void;
-  setDailyAffirmation: (affirmation: string) => void;
-};
+  setDailyAffirmation: (dailyAffirmation: string) => void;
+}
 
-export const useUserStore = create<UserStore>((set) => ({
+const useUserStore = create<UserState>((set) => ({
   mood: null,
   dailyAffirmation: null,
   setMood: (mood) => set({ mood }),
-  setDailyAffirmation: (affirmation) => set({ dailyAffirmation }),
+  setDailyAffirmation: (dailyAffirmation) => set({ dailyAffirmation })
 }));
+
+export default useUserStore;
