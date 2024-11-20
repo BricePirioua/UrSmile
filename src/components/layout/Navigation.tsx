@@ -1,11 +1,13 @@
 // src/components/layout/Navigation.tsx
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Palette, Headphones, Heart, Dog, Cat, LogOut, Sparkles } from 'lucide-react';
+import { Home, Palette, Headphones, Heart, Dog, Cat, LogOut, Sparkles, Menu, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const Navigation = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const baseNavItems = [
     { to: '/', icon: Home, label: 'Accueil' },
@@ -41,7 +43,7 @@ const Navigation = () => {
               <Sparkles className="w-4 h-4 text-primary-400 absolute -top-1 -right-1" />
             </div>
             <span className="font-bold text-xl text-primary-500">UrSmile</span>
-            <span className="ml-2 text-sm text-gray-600">| {user?.firstName}</span>
+            <span className="ml-2 text-sm text-gray-600 hidden sm:inline">| {user?.firstName}</span>
           </div>
 
           {/* Navigation Links - Desktop */}
@@ -69,32 +71,46 @@ const Navigation = () => {
               <span>Déconnexion</span>
             </button>
           </div>
-        </div>
 
-        {/* Navigation Links - Mobile */}
-        <div className="md:hidden flex flex-wrap justify-center gap-4 py-2">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium ${
-                isActive(item.to)
-                  ? 'bg-primary-50 text-primary-600'
-                  : 'text-gray-700 hover:text-primary-600'
-              }`}
-            >
-              <item.icon className="w-5 h-5 mr-1" />
-              <span>{item.label}</span>
-            </Link>
-          ))}
+          {/* Bouton Menu Mobile */}
           <button
-            onClick={handleLogout}
-            className="flex items-center px-3 py-2 text-sm font-medium text-red-600"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100"
           >
-            <LogOut className="w-5 h-5 mr-1" />
-            <span>Déconnexion</span>
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
+
+        {/* Menu Mobile Déroulant */}
+        {isMenuOpen && (
+          <div className="md:hidden py-2 space-y-1">
+            {navItems.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setIsMenuOpen(false)}
+                className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg ${
+                  isActive(item.to)
+                    ? 'bg-primary-50 text-primary-600'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <item.icon className="w-5 h-5 mr-3" />
+                <span>{item.label}</span>
+              </Link>
+            ))}
+            <button
+              onClick={() => {
+                handleLogout();
+                setIsMenuOpen(false);
+              }}
+              className="w-full flex items-center px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg"
+            >
+              <LogOut className="w-5 h-5 mr-3" />
+              <span>Déconnexion</span>
+            </button>
+          </div>
+        )}
       </div>
     </nav>
   );
